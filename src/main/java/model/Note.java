@@ -2,30 +2,22 @@ package model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
 public class Note {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String content;
-
-    // Оголошення змінної empty
-    private boolean empty;
-
-    public Note(Object ignoredId, String ignoredNewNote, String ignoredNewContent) {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    // Використання змінної empty в методі isEmpty()
-    public boolean isEmpty() {
-        return empty;
-    }
 }

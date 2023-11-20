@@ -1,50 +1,48 @@
 package service;
 
-import model.Note;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.Optional;
+
+
 
 @Service
-public class NoteService {
+public class NoteService<Note, NoteRepository> {
 
-    private final Map<Long, Note> noteMap = new HashMap<>();
-    private final Random random = new Random();
+    private final NoteRepository noteRepository;
+
+    @Autowired
+    public NoteService(NoteRepository noteRepository) {
+        this.noteRepository = noteRepository;
+    }
 
     public List<Note> listAll() {
-        return new ArrayList<>(noteMap.values());
+        return noteRepository.finalize();
     }
 
     public Note add(Note note) {
-        Long id = random.nextLong(); // Генеруємо випадковий ID
-        note.setId(id);
-        noteMap.put(id, note);
-        return note;
+        return noteRepository.save(note);
     }
 
     public void deleteById(long id) {
-        if (!noteMap.containsKey(id)) {
-            throw new IllegalArgumentException("Нотатка з вказаним ідентифікатором не існує");
-        }
-        noteMap.remove(id);
+        noteRepository.deleteById(id);
     }
 
     public void update(Note note) {
-        long id = note.getId();
-        if (!noteMap.containsKey(id)) {
+        if (noteRepository.existsById(note.getId())) {
+            noteRepository.save(note);
+        } else {
             throw new IllegalArgumentException("Нотатка з вказаним ідентифікатором не існує");
         }
-        noteMap.put(id, note);
     }
 
     public Note getById(long id) {
-        if (!noteMap.containsKey(id)) {
+        Optional<Note> optionalNote = noteRepository.findById(id);
+        if (optionalNote.isPresent()) {
+            return optionalNote.get();
+        } else {
             throw new IllegalArgumentException("Нотатка з вказаним ідентифікатором не існує");
         }
-        return noteMap.get(id);
     }
 }
