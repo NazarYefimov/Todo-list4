@@ -1,14 +1,15 @@
 package service;
 
+import model.Note;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import repository.NoteRepository;
+
 import java.util.List;
 import java.util.Optional;
 
-
-
 @Service
-public class NoteService<Note, NoteRepository> {
+public class NoteService {
 
     private final NoteRepository noteRepository;
 
@@ -18,7 +19,7 @@ public class NoteService<Note, NoteRepository> {
     }
 
     public List<Note> listAll() {
-        return noteRepository.finalize();
+        return noteRepository.findAll();
     }
 
     public Note add(Note note) {

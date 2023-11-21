@@ -1,34 +1,48 @@
 package controller;
 
+import model.Note;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import service.NoteService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/note")
 public class NoteController {
 
-    @GetMapping("/list")
-    public String listNotes(Model model) {
-        // Логіка для отримання списку нотаток та передачі їх на сторінку
-        return "note/list";
+    private final NoteService noteService;
+
+    @Autowired
+    public NoteController(NoteService noteService) {
+        this.noteService = noteService;
     }
 
-    @PostMapping("/delete")
-    public String deleteNote(@RequestParam Long id) {
-        // Логіка для видалення нотатки по ID
+    @GetMapping("/list")
+    public String listAllNotes(Model model) {
+        List<Note> notes = noteService.listAll();
+        model.addAttribute("notes", notes);
+        return "list";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteNote(@PathVariable("id") long id) {
+        noteService.deleteById(id);
         return "redirect:/note/list";
     }
 
-    @GetMapping("/edit")
-    public String editNote(@RequestParam Long id, Model model) {
-        // Логіка для отримання нотатки за ID та передачі її на сторінку редагування
-        return "note/edit";
+    @GetMapping("/edit/{id}")
+    public String editNoteForm(@PathVariable("id") long id, Model model) {
+        Note note = noteService.getById(id);
+        model.addAttribute("note", note);
+        return "edit";
     }
 
     @PostMapping("/edit")
-    public String saveEditedNote(@RequestParam Long id, @RequestParam String title, @RequestParam String content) {
-        // Логіка для збереження оновленого контенту нотатки
+    public String editNote(@ModelAttribute Note note) {
+        noteService.update(note);
         return "redirect:/note/list";
     }
 }

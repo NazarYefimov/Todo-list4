@@ -3,7 +3,11 @@ package com.example.todolist;
 import model.Note;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import repository.NoteRepository;
 import service.NoteService;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,12 +17,16 @@ class NoteServiceTest {
 
     @BeforeEach
     void setUp() {
-        noteService = new NoteService();
+        // Створюємо мок-репозиторій з допомогою Mockito
+        NoteRepository noteRepositoryMock = Mockito.mock(NoteRepository.class);
+
+        // Передаємо мок-репозиторій у конструктор сервісу
+        noteService = new NoteService(noteRepositoryMock);
     }
 
     @Test
     void listAll() {
-        Note notes = (Note) noteService.listAll();
+        List<Note> notes = noteService.listAll();
         assertNotNull(notes);
         assertTrue(notes.isEmpty());
     }
@@ -36,9 +44,6 @@ class NoteServiceTest {
         assertEquals("New Content", retrievedNote.getContent());
     }
 
-    private void assertNotNull(Long ignoredId) {
-    }
-
     @Test
     void update() {
         Note newNote = new Note(null, "New Note", "New Content");
@@ -53,9 +58,6 @@ class NoteServiceTest {
         assertNotNull(updatedNote);
         assertEquals("Updated Title", updatedNote.getTitle());
         assertEquals("Updated Content", updatedNote.getContent());
-    }
-
-    private void assertNotNull(Note ignoredUpdatedNote) {
     }
 
     @Test
